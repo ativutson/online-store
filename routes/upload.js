@@ -1,4 +1,4 @@
-const router = require('express').Router;
+const router = require('express').Router();
 const cloudinary = require('cloudinary');
 const auth = require('../middleware/auth');
 const authAdmin = require('../middleware/authAdmin');
@@ -14,7 +14,19 @@ cloudinary.config({
 router.post('/upload', (req, res) => {
     try {
         console.log(req.files);
-        res.json('Test')
+        if(!req.files || Object.keys(req.files).length === 0)
+            return res.status(400).send({msg: 'No files were uploaded.'});
+
+        const file = req.files.file;
+        if(file.size > 1024 * 1024) 
+            return res.status(400).json({msg: 'The size is too large.'});
+        if(file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/png')
+            return res.status(400).json({msg: 'The file format is incorrect.'});
+
+        cloudinary.v2.uploader.upload(file.tempFilePath, {folder: 'test'}, async (err, result) => {
+            if(err) throw err;
+            res.json({result})
+        })
     } catch (err) {
         res.status(500).json({msg: err.message})
     }

@@ -16,6 +16,7 @@ app.use(fileUpload({
 // Routes
 app.use('/user', require('./routes/userRouter'));
 app.use('/api', require('./routes/categoryRouter'));
+app.use('/api', require('./routes/upload'));
 
 
 // Connect to MongoDB
@@ -29,7 +30,6 @@ mongoose.connect(URI, {
     if(err) throw err;
     console.log('Connected to MongoDB')
 })
-
 
 
 const PORT = process.env.PORT || 5000;
