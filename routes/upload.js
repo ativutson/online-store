@@ -3,8 +3,6 @@ const cloudinary = require('cloudinary').v2;
 const auth = require('../middleware/auth');
 const authAdmin = require('../middleware/authAdmin');
 const fs = require('fs');
-let streamifier = require('streamifier');
-
 
 // We will upload images on cloudinary
 cloudinary.config({
@@ -32,15 +30,12 @@ router.post('/upload', auth, authAdmin, (req, res) => {
         cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
             if(err) throw err;
             // removeTmp(file.tempFilePath)
-            res.json({result})
+            res.json({public_id: result.public_id, url: result.secure_url})
     })
     } catch(err) {
         return res.status(500).json({msg: err.message});
-
     }
 })
-
-      
 
 // Delete images
 router.post('/destroy', auth, authAdmin, (req, res) => {
@@ -59,10 +54,10 @@ router.post('/destroy', auth, authAdmin, (req, res) => {
 })
 
 
-// const removeTmp = (path) => {
-//     fs.unlink(path, err => {
-//         if(err) throw err;
-//     })
-// }
+const removeTmp = (path) => {
+    fs.unlink(path, err => {
+        if(err) throw err;
+    })
+}
 
 module.exports = router;
