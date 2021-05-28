@@ -1,8 +1,10 @@
 const router = require('express').Router();
-const cloudinary = require('cloudinary');
+const cloudinary = require('cloudinary').v2;
 const auth = require('../middleware/auth');
 const authAdmin = require('../middleware/authAdmin');
 const fs = require('fs');
+let streamifier = require('streamifier');
+
 
 // We will upload images on cloudinary
 cloudinary.config({
@@ -12,7 +14,7 @@ cloudinary.config({
 })
 
 // Only admin can upload images
-router.post('/upload', async (req, res) => {
+router.post('/upload', (req, res) => {
     try {
         console.log(req.files);
         if(!req.files || Object.keys(req.files).length === 0)
@@ -27,7 +29,7 @@ router.post('/upload', async (req, res) => {
             // removeTmp(file.tempFilePath)
             return res.status(400).json({msg: 'The file format is incorrect.'});
 
-        cloudinary.v2.uploader.upload(file.tempFilePath, {folder: 'test'}, async (err, result) => {
+        cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
             if(err) throw err;
             // removeTmp(file.tempFilePath)
             res.json({result})
