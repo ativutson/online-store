@@ -1,9 +1,25 @@
 const Products = require('../models/productModel');
 
+// Filtering, sorting, pagination
+class APIfeatures {
+    constructor(query, queryString) {
+        this.query = query;
+        this.queryString = queryString;
+    }
+
+    filtering(){}
+
+    sorting(){}
+
+    paginating(){}
+}
+
 const productCtrl = {
     getProducts: async (req, res) => {
         try {
-            const products = await Products.find();
+            console.log(req.query);
+            const features = new APIfeatures(Products.find(), req.query)
+            const products = await features.query;
             res.json(products)
             
         } catch (err) {
