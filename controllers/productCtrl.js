@@ -7,7 +7,23 @@ class APIfeatures {
         this.queryString = queryString;
     }
 
-    filtering(){}
+    filtering() {
+        const queryObj = {...this.queryString} // queryString = req.query
+        console.log({before: queryObj}); // before deleting page
+
+        const excludedFields = ['page', 'sort', 'limit'];
+        excludedFields.forEach(el => delete(queryObj[el]))
+        console.log({after: queryObj}); // after deleting page
+
+        let queryStr = JSON.stringify(queryObj)
+        queryStr = queryStr.replace(/\b(gte|gt|lt|lte|regex)\b/g, match => '$' + match)
+        console.log({queryObj, queryStr});
+
+        this.query.find(JSON.parse(queryStr))
+
+        return this;
+
+    }
 
     sorting(){}
 
@@ -17,8 +33,7 @@ class APIfeatures {
 const productCtrl = {
     getProducts: async (req, res) => {
         try {
-            console.log(req.query);
-            const features = new APIfeatures(Products.find(), req.query)
+            const features = new APIfeatures(Products.find(), req.query).filtering();
             const products = await features.query;
             res.json(products)
             
